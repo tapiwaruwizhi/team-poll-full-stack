@@ -61,3 +61,8 @@ Create a .env file in the root to override any sensitive values from docker-comp
 
 - The backend server should be running on http://localhost:3000
 - The frontent server should be running on http://localhost:3001
+
+
+## Tests
+
+Tests are available for backend functionality and to run them you run `npm run jest`
