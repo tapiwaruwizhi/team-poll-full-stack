@@ -1,0 +1,70 @@
+version: '3.8'
+
+networks:
+  app_network:  # Custom network shared by all services
+
+volumes:
+  mysql-data:   # Persistent volume for MySQL data
+  redis-data: 
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword       
+      MYSQL_DATABASE: team_polls_db            
+      MYSQL_USER: appuser                      
+      MYSQL_PASSWORD: apppassword               
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    ports:
+      - "3306:3306"   # Expose MySQL port (optional if you only access from Docker)
+    volumes:
+      - mysql-data:/var/lib/mysql               # Persist MySQL data
+      - ./init-db:/docker-entrypoint-initdb.d  # Init scripts for schema, seed data
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app_network
+
+  backend:
+    build: ./team-polls-api
+    container_name: team-polls-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./team-polls-api:/app
+    depends_on:
+      mysql:
+        condition: service_healthy   # Wait for MySQL to be healthy before starting
+    networks:
+      - app_network
+
+  frontend:
+    build: ./team-polls-client-new
+    container_name: team-polls-frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./team-polls-client-new:/app
+    networks:
+      - app_network
+       
