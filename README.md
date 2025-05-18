@@ -11,7 +11,7 @@ This project is split into two separate repositories:
 1. **Backend** – Fastify, MySQL, Redis  
    🔗 [team-poll-backend](https://github.com/tapiwaruwizhi/team-poll-backend)
 
-2. **Frontend** – React (Vite or Create React App)  
+2. **Frontend** – React ( React App)  
    🔗 [team-poll-frontend](https://github.com/tapiwaruwizhi/team-poll-frontend)
 
 ---
